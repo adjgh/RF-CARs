@@ -1,0 +1,485 @@
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE NRF24L01_DRV
+OBJECT MODULE PLACED IN NRF24L01_drv.OBJ
+COMPILER INVOKED BY: C:\Keil4\C51\BIN\C51.EXE NRF24L01_drv.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*=======================================================
+   2          <<<<<<<<<<<<<<<<<<< 爱普雷德技术团队 >>>>>>>>>>>>>>>>>>>>
+   3          <<<<<<<<<<<<<<<<<<< 我们一起追求卓越 >>>>>>>>>>>>>>>>>>>>
+   4          ---------------------------------------------------------
+   5          旗舰网店: http://aplid.taobao.com/
+   6          官方邮箱: njaplid@163.com
+   7           技术QQ1: 535676091
+   8           技术QQ2: 1915624375
+   9           技术QQ3: 154211813
+  10          ---------------------------------------------------------
+  11                         All right reserved.2013.01
+  12          ---------------------------------------------------------
+  13           文件名: NRF24L01.c
+  14           描述:无线模块通信c 文件
+  15           作者:
+  16          =========================================================
+  17          ----------------------------------------------------------------------------------------------------------
+             --*/
+  18          #include "NRF24L01_drv.h"
+  19          uchar  TX_ADDRESS[TX_ADR_WIDTH]= {0x12,0x34,0x56,0x78,0x90}; //本地地址
+  20          uchar  RX_ADDRESS[RX_ADR_WIDTH]= {0x12,0x34,0x56,0x78,0x90}; //接收地址
+  21          
+  22          uchar  sta_A;   //状态标志
+  23          uchar  sta_B;   //状态标志
+  24          
+  25          sbit right_wheel_back = P1^0;
+  26          sbit right_wheel_go = P1^1;
+  27          sbit left_wheel_back = P1^2;
+  28          sbit left_wheel_go = P1^3;
+  29          /**********************************************
+  30          功能：
+  31              延时
+  32          输入参数：
+  33              s: 延时时间
+  34          输出参数：
+  35              无
+  36          返回值：
+  37          **********************************************/
+  38          //void Delay(unsigned int s)
+  39          //{
+  40          //      unsigned int i;
+  41          //      for(i=0; i<s; i++);
+  42          //      for(i=0; i<s; i++);
+  43          //}
+  44          
+  45          /**********************************************
+  46          功能：
+  47              毫秒延时
+  48          输入参数：
+  49              count: 延时毫秒数
+  50          输出参数：
+  51              无
+  52          返回值：
+  53          **********************************************/
+  54          void delayms(unsigned int count)
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 2   
+
+  55          {
+  56   1              unsigned int i,j;
+  57   1              for(i=0;i<count;i++)
+  58   1              {
+  59   2                      for(j=0;j<120;j++);
+  60   2              }
+  61   1      }
+  62           
+  63          /**********************************************
+  64           功能：
+  65                   无线模块A 初始化
+  66           输入参数：
+  67                   无
+  68           输出参数：
+  69                   无
+  70           返回值：
+  71           **********************************************/
+  72          //void init_NRF24L01_A(void)
+  73          //{
+  74          //      delayms(1);
+  75          //      CE_A=0;
+  76          //      CSN_A=1;
+  77          //      SCK_A=0;
+  78          //      SPI_Write_Buf_A(WRITE_REG + TX_ADDR, TX_ADDRESS, TX_ADR_WIDTH);    // 写本地地址 
+  79          //      SPI_Write_Buf_A(WRITE_REG + RX_ADDR_P0, RX_ADDRESS, RX_ADR_WIDTH); // 写接收端地址
+  80          //      SPI_RW_Reg_A(WRITE_REG + EN_AA, 0x01);      //  频道0自动 ACK应答允许 
+  81          //      SPI_RW_Reg_A(WRITE_REG + EN_RXADDR, 0x01);  //  允许接收地址只有频道0，如果需要多频道可以参考Page21  
+  82          //      SPI_RW_Reg_A(WRITE_REG + RF_CH, 0);        //   设置信道工作为2.4GHZ，收发必须一致
+  83          //      SPI_RW_Reg_A(WRITE_REG + RX_PW_P0, 1); //设置接收数据长度，本次设置为1字节
+  84          //      SPI_RW_Reg_A(WRITE_REG + RF_SETUP, 0x07);     //设置发射速率为1MHZ，发射功率为最大值0dB
+  85          //}
+  86          
+  87          /**********************************************
+  88           功能：
+  89                   无线模块B 初始化
+  90           输入参数：
+  91                   无
+  92           输出参数：
+  93                   无
+  94           返回值：
+  95           **********************************************/
+  96          void init_NRF24L01_B(void)
+  97          {
+  98   1              delayms(1);
+  99   1              CE_B=0;
+ 100   1              CSN_B=1;
+ 101   1              SCK_B=0;
+ 102   1              SPI_Write_Buf_B(WRITE_REG + TX_ADDR, TX_ADDRESS, TX_ADR_WIDTH);    // 写本地地址 
+ 103   1              SPI_Write_Buf_B(WRITE_REG + RX_ADDR_P0, RX_ADDRESS, RX_ADR_WIDTH); // 写接收端地址
+ 104   1              SPI_RW_Reg_B(WRITE_REG + EN_AA, 0x01);      //  频道0自动 ACK应答允许 
+ 105   1              SPI_RW_Reg_B(WRITE_REG + EN_RXADDR, 0x01);  //  允许接收地址只有频道0，如果需要多频道可以参考Page21  
+ 106   1              SPI_RW_Reg_B(WRITE_REG + RF_CH, 0);        //   设置信道工作为2.4GHZ，收发必须一致
+ 107   1              SPI_RW_Reg_B(WRITE_REG + RX_PW_P0, 1); //设置接收数据长度，本次设置为1字节
+ 108   1              SPI_RW_Reg_B(WRITE_REG + RF_SETUP, 0x07);     //设置发射速率为1MHZ，发射功率为最大值0dB
+ 109   1      }
+ 110          
+ 111          /**********************************************
+ 112           功能：
+ 113                   无线模块A 的SPI写时序
+ 114           输入参数：
+ 115                   byte :写的内容(字节)
+ 116           输出参数：
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 3   
+
+ 117                   无
+ 118           返回值：
+ 119                  读的内容
+ 120           **********************************************/
+ 121          //uchar SPI_RW_A(uchar byte)
+ 122          //{
+ 123          //      uchar i;
+ 124          //      for(i=0;i<8;i++)
+ 125          //      {
+ 126          //              MOSI_A = (byte & 0x80);
+ 127          //              byte = (byte << 1);  
+ 128          //              SCK_A = 1;
+ 129          //              byte |= MISO_A;
+ 130          //              SCK_A = 0;
+ 131          //      }
+ 132          //      return(byte);
+ 133          //}
+ 134          
+ 135          /**********************************************
+ 136           功能：
+ 137                   无线模块B 的SPI写时序
+ 138           输入参数：
+ 139                   byte :写的内容(字节)
+ 140           输出参数：
+ 141                   无
+ 142           返回值：
+ 143                  读的内容
+ 144           **********************************************/
+ 145          uchar SPI_RW_B(uchar byte)
+ 146          {
+ 147   1              uchar i;
+ 148   1              for(i=0;i<8;i++)
+ 149   1              {
+ 150   2                      MOSI_B = (byte & 0x80);
+ 151   2                      byte = (byte << 1);
+ 152   2                      SCK_B = 1;
+ 153   2                      byte |= MISO_B;
+ 154   2                      SCK_B = 0;
+ 155   2              }
+ 156   1              return(byte);
+ 157   1      }
+ 158          
+ 159          /**********************************************
+ 160           功能：
+ 161                   读无线模块A 
+ 162           输入参数：
+ 163                   reg : 读的寄存器地址
+ 164           输出参数：
+ 165                   无
+ 166           返回值：
+ 167                  读到的内容
+ 168           **********************************************/
+ 169          //uchar SPI_Read_A(uchar reg)
+ 170          //{
+ 171          //      uchar reg_val;
+ 172          //      CSN_A = 0; 
+ 173          //      SPI_RW_A(reg);  
+ 174          //      reg_val = SPI_RW_A(0); 
+ 175          //      CSN_A = 1;   
+ 176          //      return(reg_val); 
+ 177          //}
+ 178          
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 4   
+
+ 179          /**********************************************
+ 180           功能：
+ 181                   读无线模块B
+ 182           输入参数：
+ 183                   reg : 读的寄存器地址
+ 184           输出参数：
+ 185                   无
+ 186           返回值：
+ 187                  读到的内容
+ 188           **********************************************/
+ 189          uchar SPI_Read_B(uchar reg)
+ 190          {
+ 191   1              uchar reg_val;
+ 192   1              CSN_B = 0;              
+ 193   1              SPI_RW_B(reg);        
+ 194   1              reg_val = SPI_RW_B(0);  
+ 195   1              CSN_B = 1;          
+ 196   1              return(reg_val);     
+ 197   1      }
+ 198          
+ 199          /**********************************************
+ 200           功能：
+ 201                   无线模块A 读写
+ 202           输入参数：
+ 203                   reg : 读的寄存器地址
+ 204                   value :写入的数据
+ 205           输出参数：
+ 206                   无
+ 207           返回值：
+ 208                  读到的内容
+ 209           **********************************************/
+ 210          //uchar SPI_RW_Reg_A(uchar reg, uchar value)
+ 211          //{
+ 212          //      uchar status;
+ 213          //      CSN_A = 0;  
+ 214          //      status = SPI_RW_A(reg);    
+ 215          //      SPI_RW_A(value);            
+ 216          //      CSN_A = 1;                  
+ 217          //      return(status);           
+ 218          //}
+ 219          
+ 220          /**********************************************
+ 221           功能：
+ 222                   无线模块B 读写
+ 223           输入参数：
+ 224                   reg : 读的寄存器地址
+ 225                   value :写入的数据
+ 226           输出参数：
+ 227                   无
+ 228           返回值：
+ 229                  读到的内容
+ 230           **********************************************/
+ 231          uchar SPI_RW_Reg_B(uchar reg, uchar value)
+ 232          {
+ 233   1              uchar status;
+ 234   1              CSN_B = 0;             
+ 235   1              status = SPI_RW_B(reg);    
+ 236   1              SPI_RW_B(value);          
+ 237   1              CSN_B = 1;               
+ 238   1              return(status);  
+ 239   1      }
+ 240          
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 5   
+
+ 241          /**********************************************
+ 242           功能：
+ 243                   从无线模块A 读出数据
+ 244           输入参数：
+ 245                   reg : 寄存器地址
+ 246                   pBuf : 待读出数据地址
+ 247                   num : 读出数据的个数
+ 248           输出参数：
+ 249                   无
+ 250           返回值：
+ 251           **********************************************/
+ 252          //uchar SPI_Read_Buf_A(uchar reg, uchar *pBuf, uchar num)
+ 253          //{
+ 254          //      uchar status,i;
+ 255          //      CSN_A = 0;               
+ 256          //      status = SPI_RW_A(reg);      
+ 257          //      for(i=0;i<num;i++)
+ 258          //              pBuf[i] = SPI_RW_A(0);   
+ 259          //      CSN_A = 1;                           
+ 260          //      return(status);                
+ 261          //}
+ 262          
+ 263          /**********************************************
+ 264           功能：
+ 265                   从无线模块B 读出数据
+ 266           输入参数：
+ 267                   reg : 寄存器地址
+ 268                   pBuf : 待读出数据地址
+ 269                   num : 读出数据的个数
+ 270           输出参数：
+ 271                   无
+ 272           返回值：
+ 273           **********************************************/
+ 274          //uchar SPI_Read_Buf_B(uchar reg, uchar *pBuf, uchar num)
+ 275          //{
+ 276          //      uchar status,i;
+ 277          //      CSN_B = 0;            
+ 278          //      status = SPI_RW_B(reg);        
+ 279          //      for(i=0;i<num;i++)
+ 280          //              pBuf[i] = SPI_RW_B(0);   
+ 281          //      CSN_B = 1;                           
+ 282          //      return(status);              
+ 283          //}
+ 284          
+ 285          /**********************************************
+ 286           功能：
+ 287                   无线模块A 写入数据
+ 288           输入参数：
+ 289                   reg : 寄存器地址
+ 290                   pBuf : 待写入数据地址
+ 291                   num : 写入数据的个数
+ 292           输出参数：
+ 293                   无
+ 294           返回值：
+ 295           **********************************************/
+ 296          //uchar SPI_Write_Buf_A(uchar reg, uchar *pBuf, uchar num)
+ 297          //{
+ 298          //      uchar status,i;
+ 299          //      CSN_A = 0;           
+ 300          //      status = SPI_RW_A(reg);   
+ 301          //      for(i=0; i<num; i++)
+ 302          //              SPI_RW_A(*pBuf++);
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 6   
+
+ 303          //      CSN_A = 1;          
+ 304          //      return(status);     
+ 305          //}
+ 306          
+ 307          /**********************************************
+ 308           功能：
+ 309                   无线模块B 写入数据
+ 310           输入参数：
+ 311                   reg : 寄存器地址
+ 312                   pBuf : 待写入数据地址
+ 313                   num : 写入数据的个数
+ 314           输出参数：
+ 315                   无
+ 316           返回值：
+ 317           **********************************************/
+ 318          uchar SPI_Write_Buf_B(uchar reg, uchar *pBuf, uchar num)
+ 319          {
+ 320   1              uchar status,i;
+ 321   1              CSN_B = 0;         
+ 322   1              status = SPI_RW_B(reg);   
+ 323   1              for(i=0; i<num; i++) 
+ 324   1                      SPI_RW_B(*pBuf++);
+ 325   1              CSN_B = 1;         
+ 326   1              return(status);    
+ 327   1      }
+ 328          
+ 329          /**********************************************
+ 330           功能：
+ 331                   配置无线模块A 为接收模式
+ 332           输入参数：
+ 333                   无
+ 334           输出参数：
+ 335                   无
+ 336           返回值：
+ 337           **********************************************/
+ 338          //void SetRX_Mode_A(void)
+ 339          //{
+ 340          //      CE_A = 0;
+ 341          //      SPI_RW_Reg_A(WRITE_REG + CONFIG, 0x0f);     
+ 342          //      CE_A = 1; 
+ 343          //      delayms(1);
+ 344          //}
+ 345          
+ 346          /**********************************************
+ 347           功能：
+ 348                   配置无线模块B 为接收模式
+ 349           输入参数：
+ 350                   无
+ 351           输出参数：
+ 352                   无
+ 353           返回值：
+ 354           **********************************************/
+ 355          void SetRX_Mode_B(void)
+ 356          {
+ 357   1              CE_B = 0;
+ 358   1              SPI_RW_Reg_B(WRITE_REG + CONFIG, 0x0f);  
+ 359   1              CE_B = 1; 
+ 360   1              delayms(1);
+ 361   1      }
+ 362          
+ 363          /**********************************************
+ 364           功能：
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 7   
+
+ 365                   无线模块A 接收到的数据
+ 366           输入参数：
+ 367                   rx_buf : 收到的数据放在rx_buf里面
+ 368           输出参数：
+ 369                   无
+ 370           返回值：
+ 371                  是否接收到数据
+ 372           **********************************************/
+ 373          //unsigned char nRF24L01_RxPacket_A(unsigned char *rx_buf)
+ 374          //{
+ 375          //      unsigned char revale=0;
+ 376          //      sta_A=SPI_Read_A(STATUS); 
+ 377          //      if(RX_DR_A)   
+ 378          //      {
+ 379          //              CE_A = 0;    
+ 380          //              SPI_Read_Buf_A(RD_RX_PLOAD,rx_buf,TX_PLOAD_WIDTH);
+ 381          //              revale =1;   
+ 382          //      }
+ 383          //      SPI_RW_Reg_A(WRITE_REG+STATUS,sta_A);  
+ 384          //      return revale;
+ 385          //}
+ 386          
+ 387          /**********************************************
+ 388           功能：
+ 389                   无线模块B 接收到的数据
+ 390           输入参数：
+ 391                   rx_buf : 收到的数据放在rx_buf里面
+ 392           输出参数：
+ 393                   无
+ 394           返回值：
+ 395                  是否接收到数据
+ 396           **********************************************/
+ 397          //unsigned char nRF24L01_RxPacket_B(unsigned char *rx_buf)
+ 398          //{
+ 399          //      unsigned char revale=0;
+ 400          //      sta_B=SPI_Read_B(STATUS); 
+ 401          //      if(RX_DR_B)   
+ 402          //      {
+ 403          //              CE_B = 0;  
+ 404          //              SPI_Read_Buf_B(RD_RX_PLOAD,rx_buf,TX_PLOAD_WIDTH);
+ 405          //              revale =1; 
+ 406          //      }
+ 407          //      SPI_RW_Reg_B(WRITE_REG+STATUS,sta_B); 
+ 408          //      return revale;
+ 409          //}
+ 410          
+ 411          /**********************************************
+ 412           功能：
+ 413                   无线模块A 发送数据
+ 414           输入参数：
+ 415                   tx_buf : 发送的内容
+ 416           输出参数：
+ 417                   无
+ 418           返回值：
+ 419           **********************************************/
+ 420          //void nRF24L01_TxPacket_A(unsigned char *tx_buf)
+ 421          //{
+ 422          //      CE_A=0;   
+ 423          //      SPI_Write_Buf_A(WRITE_REG + RX_ADDR_P0, TX_ADDRESS, TX_ADR_WIDTH); 
+ 424          //      SPI_Write_Buf_A(WR_TX_PLOAD, tx_buf, TX_PLOAD_WIDTH);    
+ 425          //      SPI_RW_Reg_A(WRITE_REG + CONFIG, 0x0e);     
+ 426          //      CE_A=1;  
+C51 COMPILER V9.00   NRF24L01_DRV                                                          04/19/2018 19:23:41 PAGE 8   
+
+ 427          //      delayms(1);
+ 428          //}
+ 429          
+ 430          /**********************************************
+ 431           功能：
+ 432                   无线模块B 发送数据
+ 433           输入参数：
+ 434                   tx_buf : 发送的内容
+ 435           输出参数：
+ 436                   无
+ 437           返回值：
+ 438           **********************************************/
+ 439          //void nRF24L01_TxPacket_B(unsigned char *tx_buf)
+ 440          //{
+ 441          //      CE_B=0;  
+ 442          //      SPI_Write_Buf_B(WRITE_REG + RX_ADDR_P0, TX_ADDRESS, TX_ADR_WIDTH);
+ 443          //      SPI_Write_Buf_B(WR_TX_PLOAD, tx_buf, TX_PLOAD_WIDTH);  
+ 444          //      SPI_RW_Reg_B(WRITE_REG + CONFIG, 0x0e);     
+ 445          //      CE_B=1;  
+ 446          //      delayms(1);
+ 447          //}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    231    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     12       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,4 @@
+"s.obj",
+"NRF24L01_drv.obj" 
+TO "slaver" 
+RAMSIZE(256) 
